@@ -15,12 +15,14 @@ typedef enum AppMessages
 	Message_MoveTo = 1,	
 	Message_PosChanged = 2,
 	Message_MoveDoors = 3,
+	Message_DoorsOpened = 4
 };
 
 void MotorCtrl_Initializing(Message* msg);
 void MotorCtrl_Stopped(Message* msg);
 void MotorCtrl_Moving(Message* msg);
 void MotorCtrl_DoorsMoving(Message* msg);
+void MotorCtrl_DoorsOpened(Message* msg);
 
 
 typedef struct MotorController_tag

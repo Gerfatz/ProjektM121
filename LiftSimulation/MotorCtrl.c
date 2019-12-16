@@ -1,9 +1,9 @@
 /*
- * MotorCtrl.c
- *
- * Created: 09.12.2019 09:52:43
- *  Author: xxx
- */ 
+* MotorCtrl.c
+*
+* Created: 09.12.2019 09:52:43
+*  Author: xxx
+*/
 
 #include "AppIncludes.h"
 
@@ -47,17 +47,12 @@ void OnElevatorPositionChanged(uint8_t currentPos, uint8_t targetPos)
 
 void MotorCtrl_Stopped(Message* msg)
 {
-	if( msg->Id == Message_MoveTo && msg->MsgParamLow < 4)
+	if( msg->Id == Message_MoveTo && msg->MsgParamLow < 4 && ReadDoorState(_motorCtrl.target/POS_STEPS_PER_FLOOR) == DoorClosed)
 	{
 		_motorCtrl.target = (FloorType)msg->MsgParamLow;
-			
+		
 		SetState(&_motorCtrl.fsm, MotorCtrl_Moving);
 		MoveElevator(_motorCtrl.target * POS_STEPS_PER_FLOOR, OnElevatorPositionChanged );
-	}
-	else if( msg->Id == Message_MoveDoors)
-	{
-		SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
-		_motorCtrl->fsm->CurrentState(msg);
 	}
 }
 
@@ -68,31 +63,31 @@ void MotorCtrl_Moving(Message* msg)
 	
 	if( msg->Id == Message_PosChanged && msg->MsgParamLow == msg->MsgParamHigh)
 	{
-		_motorCtrl.target = (FloorType)msg->MsgParamLow;	
-		SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
-	}	
+		_motorCtrl.target = (FloorType)msg->MsgParamLow;
+		SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
+		SendEvent(SignalSourceElevator, Message_MoveDoors, Door00, Door100);
+	}
 }
 
 void MotorCtrl_DoorsMoving(Message* msg){
 	
-	if(msg->MsgParamHigh < msg->MsgParamLow)
+	if( msg->Id == Message_MoveDoors && !(msg->MsgParamLow == msg->MsgParamHigh))
 	{
-		SetDoorState(DoorClosed, _motorCtrl.target);
-	}
-	else
-	{
-		SetDoorState(DoorOpen, _motorCtrl.target)
-	}
-	
-	if( msg->Id == Message_MoveDoors && msg->MsgParamLow == msg->MsgParamHigh
-	){
-		if(msg->MsgParamLow == Door00)
+		if(msg->MsgParamHigh < msg->MsgParamLow)
 		{
+			SetDoorState(DoorClosing, _motorCtrl.target/POS_STEPS_PER_FLOOR);
 			SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
 		}
-		else if(msg->MsgParamLow == Door100)
+		else
 		{
+			SetDoorState(DoorOpening, _motorCtrl.target/POS_STEPS_PER_FLOOR);		
 			SetState(&_motorCtrl.fsm, MotorCtrl_DoorsOpened);
+			StartTimer(10000);
 		}
 	}
+}
+
+void MotorCtrl_DoorsOpened(Message* msg){
+	SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
+	SendEvent(SignalSourceDoor, Message_MoveDoors, Door100, Door00);
 }
