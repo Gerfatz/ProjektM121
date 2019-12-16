@@ -10,10 +10,6 @@
 //#include "LiftLibrary.h"
 #include "AppIncludes.h"
 
-
-
-
-
 void TestFunction(uint8_t* data, uint8_t nrOfBytes);
 
 int main(void)
