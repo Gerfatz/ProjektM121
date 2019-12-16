@@ -133,6 +133,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AppIncludes.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="LiftSimulationCommon.h">
       <SubType>compile</SubType>
     </Compile>
@@ -143,6 +146,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="MotorController.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MotorCtrl.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

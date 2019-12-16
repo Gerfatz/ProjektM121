@@ -1,4 +1,1 @@
-MotorController.d MotorController.o: .././MotorController.c \
- .././LiftSimulationCommon.h
-
-.././LiftSimulationCommon.h:
+MotorController.d MotorController.o: .././MotorController.c

@@ -36,6 +36,10 @@
 /*** EIGENE DATENTYPEN ********************************************************/
 /******************************************************************************/
 
+#ifndef H_LIFT_LIBRARY
+#define H_LIFT_LIBRARY
+
+
 
 /** 
 * @brief enumerate für die explizite Festlegung von false und true
@@ -492,3 +496,4 @@ uint8_t StartTimer(uint16_t ms);
 * wieder abgestellt werden.
 */
 void StopTimer( uint8_t timerId);
+#endif
