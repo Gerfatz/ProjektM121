@@ -32,7 +32,7 @@ void MotorCtrl_Initializing(Message* msg)
 		CalibrateElevatorPosition(NotifyCalibrationDone);
 		return;
 	}
-	if( msg->Id == LiftCalibrated )
+	if( msg->Id == LiftCalibrated)
 	{
 		SetDisplay(Floor0);
 		SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
@@ -63,5 +63,4 @@ void MotorCtrl_Moving(Message* msg)
 		SetDoorState(DoorOpen, msg->MsgParamLow/POS_STEPS_PER_FLOOR);
 	}
 }
-
 

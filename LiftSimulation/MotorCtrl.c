@@ -56,14 +56,13 @@ void MotorCtrl_Stopped(Message* msg)
 	}
 }
 
-
 void MotorCtrl_Moving(Message* msg)
 {
 	SetDisplay((FloorType)(msg->MsgParamLow/POS_STEPS_PER_FLOOR));
 	
 	if( msg->Id == Message_PosChanged && msg->MsgParamLow == msg->MsgParamHigh)
 	{
-		_motorCtrl.target = (FloorType)msg->MsgParamLow;
+		_motorCtrl.target = (FloorType)msg->MsgParamLow; 
 		SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
 		SendEvent(SignalSourceElevator, Message_MoveDoors, Door00, Door100);
 	}
