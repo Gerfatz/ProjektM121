@@ -6,7 +6,5 @@ main.c
 
 MainController.c
 
-MotorController.c
-
 MotorCtrl.c
 

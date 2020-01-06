@@ -36,6 +36,7 @@ void MotorCtrl_Initializing(Message* msg)
 	{
 		SetDisplay(Floor0);
 		SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
+		SendEvent(SignalSourceApp, Message_ElevatorReady, 0, 0);
 	}
 }
 
@@ -77,17 +78,21 @@ void MotorCtrl_DoorsMoving(Message* msg){
 		{
 			SetDoorState(DoorClosing, _motorCtrl.target/POS_STEPS_PER_FLOOR);
 			SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
+			SetState(&_mainCtrl.fsm, MainCtrl_AwaitElevatorRequest);
 		}
 		else
 		{
-			SetDoorState(DoorOpening, _motorCtrl.target/POS_STEPS_PER_FLOOR);		
+			SetDoorState(DoorOpen, _motorCtrl.target/POS_STEPS_PER_FLOOR);		
 			SetState(&_motorCtrl.fsm, MotorCtrl_DoorsOpened);
-			StartTimer(10000);
+			SetState(&_mainCtrl.fsm, MainCtrl_AwaitTargetSelection);
+			StartTimer(30000);
 		}
 	}
 }
 
 void MotorCtrl_DoorsOpened(Message* msg){
-	SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
-	SendEvent(SignalSourceDoor, Message_MoveDoors, Door100, Door00);
+	if(msg->Id == TimerEvent){		
+		SetState(&_motorCtrl.fsm, MotorCtrl_DoorsMoving);
+		SendEvent(SignalSourceDoor, Message_MoveDoors, Door100, Door00);
+	}
 }

@@ -18,6 +18,7 @@ int main(void)
 	Usart_Init();
 	RegisterTestHandler( TestFunction );
 	RegisterFsm(&_motorCtrl.fsm);
+	RegisterFsm(&_mainCtrl.fsm);
 	// letzte Funktion die aufgerufen wird!
 	InitializeStart();
 }
