@@ -48,6 +48,9 @@ void OnElevatorPositionChanged(uint8_t currentPos, uint8_t targetPos)
 
 void MotorCtrl_Stopped(Message* msg)
 {
+	Usart_PutChar(0xD0);
+	Usart_PutChar(msg->MsgParamLow);
+	
 	if( msg->Id == Message_MoveTo && msg->MsgParamLow < 4 && ReadDoorState(_motorCtrl.target/POS_STEPS_PER_FLOOR) == DoorClosed)
 	{
 		_motorCtrl.target = (FloorType)msg->MsgParamLow;
@@ -70,6 +73,12 @@ void MotorCtrl_Moving(Message* msg)
 }
 
 void MotorCtrl_DoorsMoving(Message* msg){
+	static uint8_t lastTimer = 0;
+	
+	//Wir stoppen den letzen Timer, um ein frühzeitiges schlissen durch alte Timer zu verhindern
+	if(lastTimer != 0){
+		StopTimer(lastTimer);
+	}
 	
 	if( msg->Id == Message_MoveDoors && !(msg->MsgParamLow == msg->MsgParamHigh))
 	{
@@ -77,14 +86,12 @@ void MotorCtrl_DoorsMoving(Message* msg){
 		{
 			SetDoorState(DoorClosing, _motorCtrl.target/POS_STEPS_PER_FLOOR);
 			SetState(&_motorCtrl.fsm, MotorCtrl_Stopped);
-			SetState(&_mainCtrl.fsm, MainCtrl_AwaitElevatorRequest);
 		}
 		else
 		{
 			SetDoorState(DoorOpen, _motorCtrl.target/POS_STEPS_PER_FLOOR);		
 			SetState(&_motorCtrl.fsm, MotorCtrl_DoorsOpened);
-			SetState(&_mainCtrl.fsm, MainCtrl_AwaitTargetSelection);
-			StartTimer(30000);
+			lastTimer = StartTimer(15000);
 		}
 	}
 }
